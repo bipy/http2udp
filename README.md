@@ -18,14 +18,16 @@ Body 为 Json 的请求，格式如下：
 
 ## 使用
 
-```text
-Usage of ./http2udp:
-  -p int
-        port (default 8080)
+```bash
+./http2udp -h
+
+# Usage of ./http2udp:
+#  -p int
+#        port (default 8080)
 ```
 
 
 ```shell
-http2udp -p 80
+./http2udp -p 80
 ```
 
