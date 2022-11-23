@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net"
+	"net/http"
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestServe(t *testing.T) {
 	listener, err := net.ListenUDP("udp", &net.UDPAddr{
 		IP:   net.ParseIP("127.0.0.1"),
 		Port: 8080,
@@ -27,6 +30,35 @@ func Test(t *testing.T) {
 		}
 	}(listener)
 
-	main()
+	http.HandleFunc("/", handler)
+	t.Error(http.ListenAndServe("0.0.0.0:8080", nil))
+}
 
+func TestSend(t *testing.T) {
+	client := http.Client{}
+	data, _ := json.Marshal(&Req{
+		IP:   "127.0.0.1",
+		Msg:  "Test",
+		Port: 8080,
+	})
+	resp, err := client.Post("http://localhost:8080", "application/json", bytes.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatal(resp.StatusCode)
+	}
+
+	data, _ = json.Marshal(&Req{
+		IP:   "127.0.0.1",
+		Msg:  "Test2",
+		Port: 8080,
+	})
+	resp, err = client.Post("http://localhost:8080", "application/json", bytes.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatal(resp.StatusCode)
+	}
 }
